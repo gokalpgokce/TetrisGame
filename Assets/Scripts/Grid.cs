@@ -11,22 +11,18 @@ public class Grid : MonoBehaviour
 
     public static Vector2 RoundVector(Vector2 v)
     {
-        return new Vector2 (Mathf.Round(v.x),Mathf.Round(v.y));
+        Debug.Log(new Vector2 (v.x,v.y));
+
+        // return new Vector2 (Mathf.Round(v.x),Mathf.Round(v.y));
+        return new Vector2 (v.x,v.y);
+        
     }
 
-    public static bool InsideBorder(Vector2 pos)
+    public static bool InsideBorder(Vector2 pos)  //childlardan herhangi biri sinir gecerse false olmali
     {
-        // if((int)pos.x >= 0 && (int)pos.x < row && (int)pos.y >= 0)
-        // {
-        //     Debug.Log("inside border");
-        //     Debug.Log("x position " + (int)pos.x +" y position " + (int)pos.y);
-        // }
-        // else
-        // {
-        //     Debug.Log("outside border");
-        //     Debug.Log("x position " + pos.x +" y position " + pos.y);
-        // }
-        return ((int)pos.x >= 0 && (int)pos.x < row && (int)pos.y >= 0);
+        Debug.Log("inside bordera gelen vektor " + pos);
+        Debug.Log(pos.y);
+        return (pos.x >= 0 && pos.x < row && pos.y > 0.51);
     }
 
     public static void DeleteRows(int y)

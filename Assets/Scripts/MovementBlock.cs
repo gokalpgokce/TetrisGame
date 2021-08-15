@@ -27,6 +27,7 @@ public class MovementBlock : MonoBehaviour
         {
             Vector3 vector = new Vector3(-1,0,0);
             transform.position += vector;
+            Debug.Log("sol tus");
             if(IsValidMove())
             {
                 UpdateGrid();
@@ -35,11 +36,11 @@ public class MovementBlock : MonoBehaviour
             {
                 transform.position += new Vector3(1,0,0);
             }
-            //transform.position += new Vector3(-1,0,0);
         }
         else if (Input.GetKeyDown(KeyCode.RightArrow))
         {
             transform.position += new Vector3(1,0,0);
+            Debug.Log("sag tus");
             if(IsValidMove())
             {
                 UpdateGrid();
@@ -72,15 +73,15 @@ public class MovementBlock : MonoBehaviour
             {
                 transform.Rotate (0,0,90);
             }
-            //transform.eulerAngles += new Vector3(0,0,-90);
         }
     }
 
-    IEnumerator Fall()
+    IEnumerator Fall()  // buraya da isvalidmove kontrolu koy. y=0 oldugunda corutine durmali.
     {
-        while (true)
+        while (IsValidMove())
         {
             transform.position += new Vector3(0,-1,0);
+            Debug.Log("fall fonk son pozisyon" + transform.position);
             yield return new WaitForSeconds(FallTime);
             // Debug.Log(transform.position.x);
         }
@@ -89,9 +90,10 @@ public class MovementBlock : MonoBehaviour
 
     bool IsValidMove()
     {
-        foreach (Transform child in transform)
+        foreach (Transform child in transform)  //blok icindeki childlerin pozisyinunu dolanir.
         {
             Vector2 v = Grid.RoundVector(child.position);
+            //Debug.Log("inside border a giden vektor " + v);
             if(!Grid.InsideBorder(v))
             {
                 Debug.Log("isvalidmove func ilk if false dondu");
@@ -127,7 +129,8 @@ public class MovementBlock : MonoBehaviour
         foreach (Transform child in transform)
         {
             Vector2 v = Grid.RoundVector(child.position);
-            Grid.grid[(int)v.x,(int)v.y] = child;
+            Grid.grid[(int)v.x,(int)v.y] = child;  //ınt var buralarda
+            //Debug.Log(Grid.grid[(int)v.x,(int)v.y]);
         }
     }
 
