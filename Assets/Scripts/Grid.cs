@@ -12,10 +12,8 @@ public class Grid : MonoBehaviour
     public static Vector2 RoundVector(Vector2 v)
     {
         Debug.Log(new Vector2 (v.x,v.y));
-
         // return new Vector2 (Mathf.Round(v.x),Mathf.Round(v.y));
         return new Vector2 (v.x,v.y);
-        
     }
 
     public static bool InsideBorder(Vector2 pos)  //childlardan herhangi biri sinir gecerse false olmali

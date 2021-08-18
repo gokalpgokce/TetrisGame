@@ -85,7 +85,6 @@ public class MovementBlock : MonoBehaviour
             yield return new WaitForSeconds(FallTime);
             // Debug.Log(transform.position.x);
         }
-        
     }
 
     bool IsValidMove()
@@ -102,8 +101,9 @@ public class MovementBlock : MonoBehaviour
                 
             if(Grid.grid[(int)v.x,(int)v.y] != null && Grid.grid[(int)v.x,(int)v.y].parent != transform)
             {
-                return false;
                 Debug.Log("isvalidmove func ikinci if false dondu");
+                this.enabled = false;
+                return false;
             }
         }
         Debug.Log("isValidMove True dondu");
@@ -133,14 +133,4 @@ public class MovementBlock : MonoBehaviour
             //Debug.Log(Grid.grid[(int)v.x,(int)v.y]);
         }
     }
-
-    // matf.clamp fons'yonun kullan sinirlari belirlemek icin
-
-    // bool IsValidMove(Gameobject block)
-    // {
-    //     foreach (Transform child in block.transform)
-    //     {
-            
-    //     }
-    // }
 }
