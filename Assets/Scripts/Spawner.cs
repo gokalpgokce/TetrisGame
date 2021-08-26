@@ -22,7 +22,7 @@ public class Spawner : MonoBehaviour
 
     public void SpawnBlock()
     {
-        int index = Random.Range(0,blockPrefabs.Length);
-        Instantiate (blockPrefabs[index], transform.position, Quaternion.identity);
+        //int index = Random.Range(0,blockPrefabs.Length);
+        //Instantiate (blockPrefabs[index], transform.position, Quaternion.identity);
     }
 }
