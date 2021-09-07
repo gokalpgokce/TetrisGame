@@ -86,9 +86,9 @@ public class GridManager : MonoBehaviour
                 {
                     UpdateGrid(FindBlockPosition());
                 }
-                yield return new WaitForSeconds(0.4f);
+                yield return new WaitForSeconds(0.2f);
             }
-            yield return new WaitForSeconds(0.4f);
+            yield return new WaitForSeconds(0.2f);
         }
     }
 
@@ -182,12 +182,33 @@ public class GridManager : MonoBehaviour
         Debug.Log("delete row func silinecek satir: " + row);
         for(int col = 0 ; col < Columns ; col++)
         {
-            Debug.Log("row" + row);
-            Debug.Log("col" + col);
+            //Debug.Log("row" + row);
+            //Debug.Log("col" + col);
             GameObject.Destroy(GridVisual[row,col]);
             GridVisual[row, col] = null;
             Grid[row, col] = 0;
-            Debug.Log("Grid: " + Grid[row,col]);
+            //Debug.Log("Grid: " + Grid[row,col]);
+        }
+        SlideRows(row);
+    }
+
+    public void SlideRows(int deletedRow)
+    {
+        Debug.Log("slide func");
+        for (int row = deletedRow; row < Rows-1; row++)
+        {
+            Debug.Log("ilk for ici " + row);
+            for (int col = 0; col < Columns; col++)
+            {
+                //Debug.Log("ikinci for " + col);
+                Grid[row, col] = Grid[row + 1, col];
+                GridVisual[row, col] = GridVisual[row + 1, col];
+                if (GridVisual[row, col] != null)
+                {
+                    GridVisual[row, col].transform.position = new Vector3(col, row);    
+                }
+                GridVisual[row + 1, col] = null;
+            }
         }
     }
 }
