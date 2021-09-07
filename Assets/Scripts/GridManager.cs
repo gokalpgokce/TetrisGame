@@ -7,7 +7,8 @@ public class GridManager : MonoBehaviour
 
     public int[,] Grid;
     public GameObject[,] GridVisual;
-    public GameObject squarePrefab;
+    //public GameObject squarePrefab;
+    public GameObject blockTPrefab;
     private GameObject Block;
     public int UserInputRun;
     int Rows = 20 , Columns = 10;
@@ -16,28 +17,203 @@ public class GridManager : MonoBehaviour
     {
         Grid = new int[Rows, Columns];
         GridVisual = new GameObject[Rows, Columns];
-
-        CreateBlock(5,20);
-        
+        CreateBlock(5,18);
         StartCoroutine(UserInput());
         StartCoroutine(Fall());
     }
 
     private void CreateBlock(int x, int y)
     {
-        Block = Instantiate(squarePrefab, new Vector3(x,y,0), Quaternion.identity);
+        Block = Instantiate(blockTPrefab, new Vector3(x,y,0), Quaternion.identity);
+    }
+    
+    public void UpdateGrid(Vector3 blockPosition)
+    {
+        Debug.Log("Update Grid");
+        int gridx = (int)blockPosition.x;
+        int gridy = (int)blockPosition.y;
+        Grid[gridx,gridy] = 1;
+        Block.gameObject.name = "Blok: (" +gridx+"," +gridy+")";
+        GridVisual[gridx, gridy] = Block;
+        //IsRowsFull();
+        // CreateBlock(5,18);
+    }
+    IEnumerator Fall()
+    {
+        while (true)
+        {
+            if (UserInputRun == 0)
+            {
+                Debug.Log("Fall calisti");
+                bool shouldStop = false;
+                Vector3 centerPosition = FindBlockPosition();
+                Vector3[] childPositions = FindBlockChildPos(centerPosition);
+
+                for (int i = 0; i < childPositions.Length; i++)
+                {
+                    Debug.Log("For ici");
+                    if (IsReachBottom(childPositions[i]))
+                    {
+                        Debug.Log("isreachbottom");
+                        shouldStop = true;
+                        break;
+                    }
+                    else if (CheckBlockVertical(childPositions[i]))
+                    {
+                        shouldStop = false;
+                    }
+                    else
+                    {
+                        Debug.Log("for icerisinde else kismi");
+                        shouldStop = true;
+                        break;
+                    }
+                }
+                Debug.Log("for sonu");
+                
+                if (shouldStop)
+                {
+                    Debug.Log("if should stop icerisi");
+                    for (int i = 0; i < childPositions.Length; i++)
+                    {
+                        UpdateGrid(childPositions[i]);
+                        Debug.Log("update gride gonderilecek koordinat" + childPositions[i]);
+                    }
+                    IsRowsFull();
+                    CreateBlock(5,18);
+                }
+                else
+                {
+                    Block.transform.position += new Vector3(0,-1,0);
+                }
+                yield return new WaitForSeconds(0.2f);
+            }
+            yield return new WaitForSeconds(0.2f);
+        }
+    }
+    IEnumerator UserInput()
+    {
+        while (true)
+        {
+            UserInputRun = 0;
+            if(Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+                bool canMoveLeft = false;
+                Vector3 centerPosition = FindBlockPosition();
+                Vector3[] childPositions = FindBlockChildPos(centerPosition);
+                for (int i = 0; i < childPositions.Length; i++)
+                {
+                    if (CheckBordersLeft(childPositions[i]) && CheckBlockLeft(childPositions[i]))
+                    {
+                        canMoveLeft = true;
+                    }
+                    else
+                    {
+                        canMoveLeft = false;
+                        break;
+                    }
+                }
+
+                if (canMoveLeft)
+                {
+                    Block.transform.position += new Vector3(-1,0,0);    
+                }
+            }
+
+            else if (Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                bool canMoveRight = false;
+                Vector3 centerPosition = FindBlockPosition();
+                Vector3[] childPositions = FindBlockChildPos(centerPosition);
+                for (int i = 0; i < childPositions.Length; i++)
+                {
+                    if (CheckBordersRight(childPositions[i]) && CheckBlockRight(childPositions[i]))
+                    {
+                        canMoveRight = true;
+                    }
+                    else
+                    {
+                        canMoveRight = false;
+                        break;
+                    }
+                }
+
+                if (canMoveRight)
+                {
+                    Block.transform.position += new Vector3(1,0,0);    
+                }
+            }
+
+            else if (Input.GetKeyDown(KeyCode.DownArrow))
+            {
+                bool canMoveBottom = false;
+                Vector3 centerPosition = FindBlockPosition();
+                Vector3[] childPositions = FindBlockChildPos(centerPosition);
+                
+                for (int i = 0; i < childPositions.Length; i++)
+                {
+                    if (!IsReachBottom(childPositions[i]) && CheckBlockVertical(childPositions[i]))
+                    {
+                        canMoveBottom = true;
+                    }
+                    else
+                    {
+                        canMoveBottom = false;
+                        break;
+                    }
+                }
+
+                if (canMoveBottom)
+                {
+                    Block.transform.position += new Vector3(0,-1,0);    
+                }
+            }
+            yield return null;
+        }
     }
 
+    public Vector3 FindBlockPosition()
+    {
+        int col = Mathf.RoundToInt(Block.transform.position.x);
+        int row = Mathf.RoundToInt(Block.transform.position.y);
+        return new Vector3(row, col);
+    }
+
+    public Vector3[] FindBlockChildPos(Vector3 centerBlockPosition)
+    {
+        Vector3[] childPos = new Vector3[4];
+        
+        childPos[0] = new Vector3(centerBlockPosition.x, centerBlockPosition.y - 1); // left child position
+        childPos[1] = new Vector3(centerBlockPosition.x, centerBlockPosition.y + 1); // right child position
+        childPos[2] = new Vector3(centerBlockPosition.x, centerBlockPosition.y);       // center child position
+        childPos[3] = new Vector3(centerBlockPosition.x + 1, centerBlockPosition.y); // up child position
+        
+        return childPos;
+    }
+    
+    public bool CheckBordersLeft(Vector3 blockPosition)
+    {
+        if(blockPosition.y <= 0)
+            return false;
+        return true;
+    }
     public bool CheckBlockLeft(Vector3 blockPosition)
     {
-        int LeftMove = (int)blockPosition.y-1;
-        if (Grid[(int) blockPosition.x, LeftMove] == 1)
+        int leftMove = (int)blockPosition.y-1;
+        if (Grid[(int) blockPosition.x, leftMove] == 1)
         {
             return false;
         }
         return true;
     }
 
+    public bool CheckBordersRight(Vector3 blockPosition)
+    {
+        if(blockPosition.y >=9)
+            return false;
+        return true;
+    }
+    
     public bool CheckBlockRight(Vector3 blockPosition)
     {
         int RightMove = (int)blockPosition.y+1;
@@ -55,97 +231,6 @@ public class GridManager : MonoBehaviour
         }
         return true;
     }
-
-    public void UpdateGrid(Vector3 blockPosition)
-    {
-        int gridx = (int)blockPosition.x;
-        int gridy = (int)blockPosition.y;
-        Grid[gridx,gridy] = 1;
-        Block.gameObject.name = "Blok: (" +gridx+"," +gridy+")";
-        GridVisual[gridx, gridy] = Block;
-        IsRowsFull();
-        CreateBlock(5,20);
-    }
-
-    IEnumerator Fall()
-    {
-        while (true)
-        {
-            if (UserInputRun == 0)
-            {
-                if (IsReachBottom(FindBlockPosition()))
-                {
-                    UpdateGrid(FindBlockPosition());
-                    yield return null;
-                }
-                else if(CheckBlockVertical(FindBlockPosition()))
-                {
-                    Block.transform.position += new Vector3(0,-1,0);
-                }
-                else
-                {
-                    UpdateGrid(FindBlockPosition());
-                }
-                yield return new WaitForSeconds(0.2f);
-            }
-            yield return new WaitForSeconds(0.2f);
-        }
-    }
-
-    IEnumerator UserInput()
-    {
-        while (true)
-        {
-            UserInputRun = 0;
-            if(Input.GetKeyDown(KeyCode.LeftArrow))
-            {
-                if(CheckBordersLeft(FindBlockPosition()) && CheckBlockLeft(FindBlockPosition()))
-                {
-                    Block.transform.position += new Vector3(-1,0,0);
-                }
-            }
-
-            else if (Input.GetKeyDown(KeyCode.RightArrow))
-            {
-                if(CheckBordersRight(FindBlockPosition()) && CheckBlockRight(FindBlockPosition()))
-                {
-                    Block.transform.position += new Vector3(1,0,0);
-                }
-            }
-
-            else if (Input.GetKeyDown(KeyCode.DownArrow))
-            {
-                if(!IsReachBottom(FindBlockPosition()) && CheckBlockVertical(FindBlockPosition()))
-                {
-                    UserInputRun=1;
-                    Block.transform.position += new Vector3(0,-1,0);
-                }
-            }
-            yield return null;
-        }
-    }
-
-    public Vector3 FindBlockPosition()
-    {
-        int col = Mathf.RoundToInt(Block.transform.position.x);
-        int row = Mathf.RoundToInt(Block.transform.position.y);
-        return new Vector3(row, col);
-    }
-    
-    public bool CheckBordersLeft(Vector3 blockPosition)
-    {
-        if(blockPosition.y <= 0)
-            return false;
-        return true;
-    }
-
-    public bool CheckBordersRight(Vector3 blockPosition)
-    {
-        if(blockPosition.y >=9)
-            return false;
-        return true;
-    }
-
     public bool IsReachBottom(Vector3 blockPosition)
     {
         if(blockPosition.x <= 0)
@@ -154,7 +239,6 @@ public class GridManager : MonoBehaviour
         }
         return false;
     }
-
     public void IsRowsFull()
     {
         int ColumsCount = 0;
@@ -167,40 +251,30 @@ public class GridManager : MonoBehaviour
                     ColumsCount++;
                     if(ColumsCount == 10)
                     {
-                        Debug.Log("Satir dolu delete row calisacak");
                         DeleteRows(row);
                     }
                 }
             }
-            //Debug.Log("ColumsCount: " + ColumsCount);
             ColumsCount = 0;
         }
     }
-
     public void DeleteRows(int row)
     {
-        Debug.Log("delete row func silinecek satir: " + row);
         for(int col = 0 ; col < Columns ; col++)
         {
-            //Debug.Log("row" + row);
-            //Debug.Log("col" + col);
             GameObject.Destroy(GridVisual[row,col]);
             GridVisual[row, col] = null;
             Grid[row, col] = 0;
-            //Debug.Log("Grid: " + Grid[row,col]);
         }
         SlideRows(row);
     }
 
     public void SlideRows(int deletedRow)
     {
-        Debug.Log("slide func");
         for (int row = deletedRow; row < Rows-1; row++)
         {
-            Debug.Log("ilk for ici " + row);
             for (int col = 0; col < Columns; col++)
             {
-                //Debug.Log("ikinci for " + col);
                 Grid[row, col] = Grid[row + 1, col];
                 GridVisual[row, col] = GridVisual[row + 1, col];
                 if (GridVisual[row, col] != null)
