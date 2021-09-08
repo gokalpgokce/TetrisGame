@@ -7,7 +7,7 @@ public class GridManager : MonoBehaviour
 
     public int[,] Grid;
     public GameObject[,] GridVisual;
-    //public GameObject squarePrefab;
+    public GameObject squarePrefab;
     public GameObject blockTPrefab;
     private GameObject Block;
     public int UserInputRun;
@@ -33,10 +33,11 @@ public class GridManager : MonoBehaviour
         int gridx = (int)blockPosition.x;
         int gridy = (int)blockPosition.y;
         Grid[gridx,gridy] = 1;
-        Block.gameObject.name = "Blok: (" +gridx+"," +gridy+")";
-        GridVisual[gridx, gridy] = Block;
-        //IsRowsFull();
-        // CreateBlock(5,18);
+        //Block.gameObject.name = "Blok: (" +gridx+"," +gridy+")";
+        GameObject.Destroy(Block);
+        GameObject square = Instantiate(squarePrefab, new Vector3(gridy,gridx), Quaternion.identity);
+        // Debug.Log("square: " + square.transform.position);
+        GridVisual[gridx, gridy] = square;
     }
     IEnumerator Fall()
     {
@@ -44,17 +45,14 @@ public class GridManager : MonoBehaviour
         {
             if (UserInputRun == 0)
             {
-                Debug.Log("Fall calisti");
                 bool shouldStop = false;
                 Vector3 centerPosition = FindBlockPosition();
                 Vector3[] childPositions = FindBlockChildPos(centerPosition);
 
                 for (int i = 0; i < childPositions.Length; i++)
                 {
-                    Debug.Log("For ici");
                     if (IsReachBottom(childPositions[i]))
                     {
-                        Debug.Log("isreachbottom");
                         shouldStop = true;
                         break;
                     }
@@ -64,20 +62,17 @@ public class GridManager : MonoBehaviour
                     }
                     else
                     {
-                        Debug.Log("for icerisinde else kismi");
                         shouldStop = true;
                         break;
                     }
                 }
-                Debug.Log("for sonu");
                 
                 if (shouldStop)
                 {
-                    Debug.Log("if should stop icerisi");
                     for (int i = 0; i < childPositions.Length; i++)
                     {
                         UpdateGrid(childPositions[i]);
-                        Debug.Log("update gride gonderilecek koordinat" + childPositions[i]);
+                        //Debug.Log("update gride gonderilecek koordinat" + childPositions[i]);
                     }
                     IsRowsFull();
                     CreateBlock(5,18);
