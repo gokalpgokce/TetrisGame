@@ -369,7 +369,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   squarePrefab: {fileID: 5828007790249866892, guid: 048fab65ec5594208a6d8b1382b26124, type: 3}
-  blockTPrefab: {fileID: 7251723632552831929, guid: 0a4ccddf41fd4a044b7d1e8cb9b74e69, type: 3}
+  blockPrefab:
+  - {fileID: 3047452224204945941, guid: 462ef028f42b2894a96822e07c40387a, type: 3}
+  - {fileID: 6260222027546437647, guid: 450748906789d7343a5a4a8647bebed5, type: 3}
+  - {fileID: 1848791509179171844, guid: 76a1115cfc861e14faa66ca890ee1245, type: 3}
+  - {fileID: 4271153826150446580, guid: cdc935a8b64c47a43b3622ee2d8bc895, type: 3}
+  - {fileID: 2658613619376541217, guid: 475c597fe0759ec4599ae68e73b20a78, type: 3}
+  - {fileID: 7251723632552831929, guid: 0a4ccddf41fd4a044b7d1e8cb9b74e69, type: 3}
+  - {fileID: 582843633313660038, guid: 1df908e867bc30545b531e4317243403, type: 3}
   UserInputRun: 0
 --- !u!4 &2057424107
 Transform:

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
 
 public class GridManager : MonoBehaviour
@@ -8,7 +9,7 @@ public class GridManager : MonoBehaviour
     public int[,] Grid;
     public GameObject[,] GridVisual;
     public GameObject squarePrefab;
-    public GameObject blockTPrefab;
+    public GameObject[] blockPrefab;
     private GameObject Block;
     public int UserInputRun;
     int Rows = 20 , Columns = 10;
@@ -17,26 +18,25 @@ public class GridManager : MonoBehaviour
     {
         Grid = new int[Rows, Columns];
         GridVisual = new GameObject[Rows, Columns];
-        CreateBlock(5,18);
+        CreateBlock(5,17);
         StartCoroutine(UserInput());
         StartCoroutine(Fall());
     }
 
     private void CreateBlock(int x, int y)
     {
-        Block = Instantiate(blockTPrefab, new Vector3(x,y,0), Quaternion.identity);
+        Block = Instantiate(blockPrefab[Random.Range(0,blockPrefab.Length)], new Vector3(x,y,0), Quaternion.identity);
     }
     
     public void UpdateGrid(Vector3 blockPosition)
     {
-        Debug.Log("Update Grid");
+        //Debug.Log("Update Grid");
         int gridx = (int)blockPosition.x;
         int gridy = (int)blockPosition.y;
         Grid[gridx,gridy] = 1;
         //Block.gameObject.name = "Blok: (" +gridx+"," +gridy+")";
         GameObject.Destroy(Block);
         GameObject square = Instantiate(squarePrefab, new Vector3(gridy,gridx), Quaternion.identity);
-        // Debug.Log("square: " + square.transform.position);
         GridVisual[gridx, gridy] = square;
     }
     IEnumerator Fall()
@@ -75,15 +75,15 @@ public class GridManager : MonoBehaviour
                         //Debug.Log("update gride gonderilecek koordinat" + childPositions[i]);
                     }
                     IsRowsFull();
-                    CreateBlock(5,18);
+                    CreateBlock(5,17);
                 }
                 else
                 {
                     Block.transform.position += new Vector3(0,-1,0);
                 }
-                yield return new WaitForSeconds(0.2f);
+                yield return new WaitForSeconds(0.5f);
             }
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSeconds(0.5f);
         }
     }
     IEnumerator UserInput()
@@ -173,17 +173,10 @@ public class GridManager : MonoBehaviour
         int row = Mathf.RoundToInt(Block.transform.position.y);
         return new Vector3(row, col);
     }
-
+    
     public Vector3[] FindBlockChildPos(Vector3 centerBlockPosition)
     {
-        Vector3[] childPos = new Vector3[4];
-        
-        childPos[0] = new Vector3(centerBlockPosition.x, centerBlockPosition.y - 1); // left child position
-        childPos[1] = new Vector3(centerBlockPosition.x, centerBlockPosition.y + 1); // right child position
-        childPos[2] = new Vector3(centerBlockPosition.x, centerBlockPosition.y);       // center child position
-        childPos[3] = new Vector3(centerBlockPosition.x + 1, centerBlockPosition.y); // up child position
-        
-        return childPos;
+        return Block.GetComponent<Blocks>().FindChildPos(centerBlockPosition);
     }
     
     public bool CheckBordersLeft(Vector3 blockPosition)
