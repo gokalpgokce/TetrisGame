@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GridManager : MonoBehaviour
 {
@@ -161,6 +162,32 @@ public class GridManager : MonoBehaviour
                 if (canMoveBottom)
                 {
                     Block.transform.position += new Vector3(0,-1,0);    
+                }
+            }
+            else if (Input.GetKeyDown(KeyCode.UpArrow))
+            {
+                bool canRotate = false;
+                Vector3 centerPosition = FindBlockPosition();
+                Vector3[] childPositions = FindBlockChildPos(centerPosition);
+                
+                for (int i = 0; i < childPositions.Length; i++)
+                {
+                    if (!IsReachBottom(childPositions[i]))
+                    {
+                        canRotate = true;
+                    }
+                    else
+                    {
+                        canRotate = false;
+                        break;
+                    }
+                }
+
+                if (canRotate)
+                {
+                    Blocks blok = Block.GetComponent<Blocks>();
+                    blok.ChangeDirection();
+                    Block.transform.Rotate(0,0,-90);
                 }
             }
             yield return null;
